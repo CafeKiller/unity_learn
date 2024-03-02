@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour
     // inputDirection 用于保存输入时产生的变量值
     public Vector2 inputDirection;
 
+    // physicsCheck 自定义的物理碰撞检测组件
+    public PhysicsCheck physicsCheck;
+
     [Header("基本参数")]
     // speed 角色运动速度基数, 可以直接在 unity 编辑器中直接给定初始值
     // 此处默认设置为290
@@ -29,6 +32,10 @@ public class PlayerController : MonoBehaviour
     {
         // 在此处获取角色上的 2D 刚体组件
         rb = GetComponent<Rigidbody2D>();
+
+        // 在此处获取角色上的 PhysicsCheck 组件
+        physicsCheck = GetComponent<PhysicsCheck>();
+
         // 创建 inputSystem
         inputControl = new PlayerInputControl();
 
@@ -88,12 +95,18 @@ public class PlayerController : MonoBehaviour
         transform.localScale = new Vector3(faceDir, 1, 1);
     }
 
-    // Jump 用于控制角色跳跃时逻辑
-    private void Jump(InputAction.CallbackContext callback) 
+    /// <summary>
+    /// Jump 用于控制角色跳跃时逻辑
+    /// </summary>
+    private void Jump(InputAction.CallbackContext content) 
     {
-        // Debug.Log("Jump");
-        // 为 rb 刚体添加一个向上的力, 力度模式设置为瞬时力
-        rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+        // 判断角色当前是否处于地面   
+        if (physicsCheck.isGround) 
+        {
+            // 为 rb 刚体添加一个向上的力, 力度模式设置为瞬时力
+            rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+        }
+            
     }
 
 }
