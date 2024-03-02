@@ -15,19 +15,32 @@ public class PlayerController : MonoBehaviour
     // inputDirection 用于保存输入时产生的变量值
     public Vector2 inputDirection;
 
+    [Header("基本参数")]
     // speed 角色运动速度基数, 可以直接在 unity 编辑器中直接给定初始值
     // 此处默认设置为290
     public float speed;
+
+    // jumpForce 跳跃力度
+    public float jumpForce;
 
     // 生命周期函数，在 Start() 之前调用, 类似于初始化构建
     // 如果游戏对象在启动期间处于非活动状态，则在激活之后才会调用 Awake.
     private void Awake() 
     {
+        // 在此处获取角色上的 2D 刚体组件
+        rb = GetComponent<Rigidbody2D>();
         // 创建 inputSystem
         inputControl = new PlayerInputControl();
 
-        // 在此处获取角色上的 2D 刚体组件
-        rb = GetComponent<Rigidbody2D>();
+        // 此处使用事件委托的机制 绑定一个 Jump 函数
+        inputControl.Gameplayer.Jump.started += Jump;
+
+        // 注意此处 其实可以使用语法糖的方式编写, 但为了可读性和模块清晰, 此处不使用
+        // inputControl.Gameplayer.Jump.started += 
+        //    (InputAction.CallbackContext cont) => {
+        //      ......    
+        //    };
+
     }
 
     // 生命周期函数, 在启动对象后立即调用
@@ -58,7 +71,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// 角色移动处理函数, 负责处理角色在左右移动时的逻辑处理
+    /// Move 角色移动处理函数, 负责处理角色在左右移动时的逻辑处理
     /// </summary>
     private void Move()
     {
@@ -73,6 +86,14 @@ public class PlayerController : MonoBehaviour
         
         // 控制人物翻转
         transform.localScale = new Vector3(faceDir, 1, 1);
+    }
+
+    // Jump 用于控制角色跳跃时逻辑
+    private void Jump(InputAction.CallbackContext callback) 
+    {
+        // Debug.Log("Jump");
+        // 为 rb 刚体添加一个向上的力, 力度模式设置为瞬时力
+        rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
     }
 
 }
