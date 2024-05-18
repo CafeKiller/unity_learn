@@ -86,6 +86,9 @@ public class PlayerController : MonoBehaviour
         // (speed * Time.deltaTime) * inputDirection.x 这样的写法可以减少向量的计算次数
         rb.velocity = new Vector2( (speed * Time.deltaTime) * inputDirection.x, rb.velocity.y );
 
+        /* if (inputControl.GetKeyDown(KeyCode.LeftShift)) {
+            rb.velocity = new Vector2( 0.25, rb.velocity.y );
+        } */
         
         int faceDir = (int)transform.localScale.x;
         // 判断当前角色向哪个方向移动
