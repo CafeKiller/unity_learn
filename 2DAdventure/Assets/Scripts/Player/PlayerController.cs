@@ -98,6 +98,11 @@ public class PlayerController : MonoBehaviour
         transform.localScale = new Vector3(faceDir, 1, 1);
     }
 
+    /* private void OnTriggerStay2D(Collider2D other) 
+    {
+        Debug.Log(other.name);
+    } */
+
     /// <summary>
     /// Jump 用于控制角色跳跃时逻辑
     /// </summary>
