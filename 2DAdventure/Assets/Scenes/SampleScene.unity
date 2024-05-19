@@ -4812,6 +4812,12 @@ MonoBehaviour:
   currentHealth: 0
   invulnerableDuration: 0
   invulnerable: 0
+  OnTakeDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDead:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1993489291
 GameObject:
   m_ObjectHideFlags: 0
@@ -4982,6 +4988,9 @@ MonoBehaviour:
   physicsCheck: {fileID: 0}
   speed: 290
   jumpForce: 16
+  hurtForce: 8
+  isHurt: 0
+  isDead: 0
 --- !u!114 &1993489297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5034,6 +5043,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   physicsCheck: {fileID: 0}
+  playerController: {fileID: 0}
 --- !u!114 &1993489300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5061,10 +5071,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e66aaf02337c8804f957bc6c7b429720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 10
   currentHealth: 0
   invulnerableDuration: 2
   invulnerable: 0
+  OnTakeDamage:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1993489299}
+        m_TargetAssemblyTypeName: PlayerAnimation, Assembly-CSharp
+        m_MethodName: PlayHurt
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1993489296}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: GetHurt
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnDead:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1993489296}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: PlayerDead
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2057027616
 GameObject:
   m_ObjectHideFlags: 0

@@ -26,6 +26,11 @@ public class PlayerController : MonoBehaviour
     // jumpForce 跳跃力度
     public float jumpForce;
 
+    public float hurtForce;
+    public bool isHurt;
+
+    public bool isDead;
+
     // 生命周期函数，在 Start() 之前调用, 类似于初始化构建
     // 如果游戏对象在启动期间处于非活动状态，则在激活之后才会调用 Awake.
     private void Awake() 
@@ -74,7 +79,8 @@ public class PlayerController : MonoBehaviour
     // 其是以一个固定帧率为周期执行调用的, 主要处理物理模拟或与时间相关的逻辑
     private void FixedUpdate()
     {
-        Move();
+        if (!isHurt) Move();
+        
     }
 
     /// <summary>
@@ -116,5 +122,19 @@ public class PlayerController : MonoBehaviour
         }
             
     }
+    
+    public void GetHurt(Transform attacker) 
+    {
+        isHurt = true;
+        rb.velocity = Vector2.zero;
+        Vector2 dir = new Vector2((transform.position.x - attacker.position.x), 0).normalized;
 
+        rb.AddForce(dir * hurtForce, ForceMode2D.Impulse);
+    }
+
+    public void PlayerDead() 
+    {
+        isDead = true;
+        inputControl.Gameplayer.Disable();
+    }
 }
