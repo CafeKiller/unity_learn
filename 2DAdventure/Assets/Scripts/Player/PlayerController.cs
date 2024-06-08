@@ -21,6 +21,8 @@ public class PlayerController : MonoBehaviour
     // physicsCheck 自定义的物理碰撞检测组件
     public PhysicsCheck physicsCheck;
 
+    private Collider2D coll;
+
     [Header("基本参数")]
     // speed 角色运动速度基数, 可以直接在 unity 编辑器中直接给定初始值
     // 此处默认设置为290
@@ -29,7 +31,11 @@ public class PlayerController : MonoBehaviour
     // jumpForce 跳跃力度
     public float jumpForce;
     public float hurtForce;
-    
+
+    [Header("物理材质")] 
+    public PhysicsMaterial2D normal;
+    public PhysicsMaterial2D wall;
+
     [Header("状态")]
     public bool isHurt;
     public bool isDead;
@@ -48,8 +54,11 @@ public class PlayerController : MonoBehaviour
         // 获取角色上的 PlayerAnimation 组件
         playerAnimation = GetComponent<PlayerAnimation>();
         
+        coll = GetComponent<Collider2D>();
+        
         // 创建 inputSystem
         inputControl = new PlayerInputControl();
+
 
         // 此处使用事件委托的机制 绑定一个 Jump 函数
         inputControl.Gameplayer.Jump.started += Jump;
@@ -84,13 +93,15 @@ public class PlayerController : MonoBehaviour
     {
         // 在玩家进行操作时, 将对应数组从输入系统取出
         inputDirection = inputControl.Gameplayer.Move.ReadValue<Vector2>();
+        
+        CheckState();
     }
 
     // 生命周期函数, 与 Update 类似, 但有一点不同 FixedUpdate 不受环境机器的帧率影响
     // 其是以一个固定帧率为周期执行调用的, 主要处理物理模拟或与时间相关的逻辑
     private void FixedUpdate()
     {
-        if (!isHurt) Move();
+        if (!isHurt && !isAttack) Move();
         
     }
 
@@ -156,5 +167,10 @@ public class PlayerController : MonoBehaviour
         inputControl.Gameplayer.Disable();
     }
     #endregion
+
+    public void CheckState()
+    {
+        coll.sharedMaterial = physicsCheck.isGround ? normal : wall;
+    }
 
 }
