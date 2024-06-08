@@ -12,6 +12,9 @@ public class PlayerController : MonoBehaviour
     // rb 即角色 2D 刚体组件
     private Rigidbody2D rb;
 
+    // playerAnimation 玩家动画组件
+    private PlayerAnimation playerAnimation;
+
     // inputDirection 用于保存输入时产生的变量值
     public Vector2 inputDirection;
 
@@ -22,14 +25,15 @@ public class PlayerController : MonoBehaviour
     // speed 角色运动速度基数, 可以直接在 unity 编辑器中直接给定初始值
     // 此处默认设置为290
     public float speed;
-
+    
     // jumpForce 跳跃力度
     public float jumpForce;
-
     public float hurtForce;
+    
+    [Header("状态")]
     public bool isHurt;
-
     public bool isDead;
+    public bool isAttack;
 
     // 生命周期函数，在 Start() 之前调用, 类似于初始化构建
     // 如果游戏对象在启动期间处于非活动状态，则在激活之后才会调用 Awake.
@@ -41,6 +45,9 @@ public class PlayerController : MonoBehaviour
         // 在此处获取角色上的 PhysicsCheck 组件
         physicsCheck = GetComponent<PhysicsCheck>();
 
+        // 获取角色上的 PlayerAnimation 组件
+        playerAnimation = GetComponent<PlayerAnimation>();
+        
         // 创建 inputSystem
         inputControl = new PlayerInputControl();
 
@@ -52,7 +59,11 @@ public class PlayerController : MonoBehaviour
         //    (InputAction.CallbackContext cont) => {
         //      ......    
         //    };
-
+        
+        // TODO 强制走路
+        
+        // 攻击相关
+        inputControl.Gameplayer.Attack.started += PlayerAttack;
     }
 
     // 生命周期函数, 在启动对象后立即调用
@@ -122,7 +133,14 @@ public class PlayerController : MonoBehaviour
         }
             
     }
-    
+
+    private void PlayerAttack(InputAction.CallbackContext context)
+    {
+        playerAnimation.PlayAttack();
+        isAttack = true;
+    }
+
+    #region UnityEevnt
     public void GetHurt(Transform attacker) 
     {
         isHurt = true;
@@ -137,4 +155,6 @@ public class PlayerController : MonoBehaviour
         isDead = true;
         inputControl.Gameplayer.Disable();
     }
+    #endregion
+
 }
