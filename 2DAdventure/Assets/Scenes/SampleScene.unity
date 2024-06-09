@@ -3747,7 +3747,7 @@ CompositeCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_GeometryType: 0
+  m_GeometryType: 1
   m_GenerationType: 0
   m_EdgeRadius: 0
   m_ColliderPaths:
@@ -4841,6 +4841,7 @@ GameObject:
   - component: {fileID: 1957717143}
   - component: {fileID: 1957717142}
   - component: {fileID: 1957717144}
+  - component: {fileID: 1957717146}
   m_Layer: 8
   m_Name: Boar
   m_TagString: Untagged
@@ -5075,6 +5076,9 @@ MonoBehaviour:
   chaseSpeed: 260
   currentSpeed: 0
   faceDir: {x: 0, y: 0, z: 0}
+  waitTime: 2
+  waitTImeCounter: 0
+  wait: 0
 --- !u!95 &1957717145
 Animator:
   serializedVersion: 5
@@ -5096,6 +5100,29 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1957717146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957717136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a4293fb47c18b042a292c8ddb053240, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  manual: 1
+  bottomOffset: {x: -0.83, y: 0}
+  leftOffset: {x: -1.38, y: 0.54}
+  rightOffset: {x: 1.12, y: 0.56}
+  checkRaduis: 0.1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  isGround: 0
+  touchLeftWall: 0
+  touchRightWall: 0
 --- !u!1 &1993489291
 GameObject:
   m_ObjectHideFlags: 0
@@ -5285,12 +5312,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a4293fb47c18b042a292c8ddb053240, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  manual: 0
   bottomOffset: {x: -0.06, y: 0}
+  leftOffset: {x: -0.63, y: 0.79}
+  rightOffset: {x: 0.7, y: 0.79}
   checkRaduis: 0.1
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   isGround: 0
+  touchLeftWall: 0
+  touchRightWall: 0
 --- !u!95 &1993489298
 Animator:
   serializedVersion: 5
@@ -5808,5 +5840,5 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 619394802}
   - {fileID: 1993489293}
-  - {fileID: 1660424550}
   - {fileID: 1957717140}
+  - {fileID: 1660424550}
