@@ -24,12 +24,23 @@ public class Enemy : MonoBehaviour
     // 方向
     public Vector3 faceDir;
 
+    // 记录将要攻击的对象
+    public Transform attacker;
+
+    // 受击力度
+    public float hurtForce;
+    
     [Header("计时器")] 
     public float waitTime;
 
     public float waitTImeCounter;
     public bool wait;
-    
+
+    [Header("状态")] 
+    public bool isHurt;
+
+    public bool isDead;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -58,13 +69,15 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Move();
+        if(!isHurt & !isDead)
+            Move();
     }
 
-    public virtual void Move()
+    protected virtual void Move()
     {
         rb.velocity = new Vector2(currentSpeed * faceDir.x * Time.deltaTime, rb.velocity.y);
     }
+    
 
     public void TimeCounter()
     {
@@ -79,5 +92,45 @@ public class Enemy : MonoBehaviour
                 transform.localScale = new Vector3(faceDir.x, 1, 1);
             }
         }
+    }
+
+    public void OnTakeDamage(Transform attackTrans)
+    {
+        attacker = attackTrans;
+        
+        // 转身
+        if (attackTrans.position.x - transform.position.x > 0)
+            transform.localScale = new Vector3(-1, 1, 1);
+        if (attackTrans.position.x - transform.position.x < 0)
+            transform.localScale = new Vector3(1, 1, 1);
+        
+        // 受伤被击退
+        isHurt = true;
+        anima.SetTrigger("hurt");
+        var dir = new Vector2(transform.position.x - attackTrans.position.x, 0).normalized;
+
+        StartCoroutine(OnHurt(dir));
+    }
+    
+    private IEnumerator OnHurt(Vector2 dir)
+    { 
+        rb.AddForce(dir * hurtForce, ForceMode2D.Impulse);
+        yield return new WaitForSeconds(hurtForce / 10);
+        isHurt = false;
+    }
+
+    public void OnDie()
+    {
+        gameObject.layer = 2;
+        anima.SetBool("dead", true);
+        isDead = true;
+    }
+
+    public void DestroyAfterAnimation()
+    {
+        // BUG : Animation Event 无法正确触发本方法
+        // https://forum.unity.com/threads/animation-event-polymorphism-interpreted-as-duplication.1482300/
+        Debug.Log("DestroyAfterAnimation BUG");
+        Destroy(this.gameObject);
     }
 }
