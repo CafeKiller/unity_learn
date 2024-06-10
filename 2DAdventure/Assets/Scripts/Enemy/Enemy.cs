@@ -32,12 +32,24 @@ public class Enemy : MonoBehaviour
 
     // 受击力度
     public float hurtForce;
+
+    [Header("检测")] 
+    public Vector2 centerOffset;
+
+    public Vector2 checkSize;
+
+    public float checkDistance;
+
+    public LayerMask attackLayer;
     
     [Header("计时器")] 
     public float waitTime;
 
-    public float waitTImeCounter;
+    public float waitTimeCounter;
     public bool wait;
+
+    public float losTime;
+    public float lostTimeCounter;
 
     [Header("状态")] 
     public bool isHurt;
@@ -62,7 +74,8 @@ public class Enemy : MonoBehaviour
         physicsCheck = GetComponent<PhysicsCheck>();
         
         currentSpeed = normalSpeed;
-        waitTImeCounter = waitTime;
+        waitTimeCounter = waitTime;
+        lostTimeCounter = losTime;
     }
 
     private void Update()
@@ -107,16 +120,47 @@ public class Enemy : MonoBehaviour
         // 转身计时
         if (wait)
         {
-            waitTImeCounter -= Time.deltaTime;
-            if (waitTImeCounter <= 0)
+            waitTimeCounter -= Time.deltaTime;
+            if (waitTimeCounter <= 0)
             {
                 wait = false;
-                waitTImeCounter = waitTime;
+                waitTimeCounter = waitTime;
                 transform.localScale = new Vector3(faceDir.x, 1, 1);
             }
         }
+        
+        // 丢失目标计时器
+        if (!FoundPlayer() && lostTimeCounter > 0)
+        {
+            lostTimeCounter -= Time.deltaTime;
+        }
+        /*else
+        {
+            lostTimeCounter = losTime;
+        }*/
     }
 
+    public bool FoundPlayer()
+    {
+        return Physics2D.BoxCast(transform.position + (Vector3)centerOffset, 
+                                    checkSize, 0, faceDir, checkDistance, attackLayer);
+    }
+
+    public void SwitchStatus(NPCStatus status)
+    {
+        var newStatus = status switch
+        {
+            NPCStatus.Patrol => patrolState,
+            NPCStatus.Chase => chaseState,
+            _ => null
+        };
+
+        currentState.OnExit();
+        currentState = newStatus;
+        currentState.OnEnter(this);
+    }
+
+    #region 事件执行方法
     public void OnTakeDamage(Transform attackTrans)
     {
         attacker = attackTrans;
@@ -131,7 +175,7 @@ public class Enemy : MonoBehaviour
         isHurt = true;
         anima.SetTrigger("hurt");
         var dir = new Vector2(transform.position.x - attackTrans.position.x, 0).normalized;
-
+        rb.velocity = new Vector2(0, rb.velocity.y);
         StartCoroutine(OnHurt(dir));
     }
     
@@ -155,5 +199,11 @@ public class Enemy : MonoBehaviour
         // https://forum.unity.com/threads/animation-event-polymorphism-interpreted-as-duplication.1482300/
         Debug.Log("DestroyAfterAnimation BUG");
         Destroy(this.gameObject);
+    }
+    #endregion
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.DrawWireSphere(transform.position + (Vector3)centerOffset, 0.2f);
     }
 }

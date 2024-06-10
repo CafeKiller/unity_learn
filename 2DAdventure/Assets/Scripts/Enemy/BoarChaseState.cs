@@ -2,33 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoarPatrolState : BaseState
+public class BoarChaseState : BaseState
 {
     public override void OnEnter(Enemy enemy)
     {
+        // Debug.Log("BoarChaseState.OnEnter");
         currentEmeny = enemy;
-        currentEmeny.currentSpeed = currentEmeny.normalSpeed;
+        currentEmeny.currentSpeed = currentEmeny.chaseSpeed;
+        currentEmeny.anima.SetBool("run", true);
     }
 
     public override void LogicUpdate()
     {
-        // TODO: 发现 player 就切换到 chase 状态
-        if (currentEmeny.FoundPlayer())
+        if (currentEmeny.lostTimeCounter <= 0)
         {
-            currentEmeny.SwitchStatus(NPCStatus.Chase);
+            currentEmeny.SwitchStatus(NPCStatus.Patrol);
         }
-
+        
         if (!currentEmeny.physicsCheck.isGround  
             || (currentEmeny.physicsCheck.touchLeftWall && currentEmeny.faceDir.x < 0)
             || (currentEmeny.physicsCheck.touchRightWall && currentEmeny.faceDir.x > 0))
         {
-            // transform.localScale = new Vector3(faceDir.x, 1, 1);
-            currentEmeny.wait = true;
-            currentEmeny.anima.SetBool("walk", false);
-        }
-        else
-        {
-            currentEmeny.anima.SetBool("walk", true);
+            currentEmeny.transform.localScale = new Vector3(currentEmeny.faceDir.x, 1, 1);
         }
     }
 
@@ -39,7 +34,7 @@ public class BoarPatrolState : BaseState
 
     public override void OnExit()
     {
-        Debug.Log("BoarPatrolState.OnExit");
-        currentEmeny.anima.SetBool("walk", false);
+        currentEmeny.lostTimeCounter = currentEmeny.losTime;
+        currentEmeny.anima.SetBool("run", false);
     }
 }

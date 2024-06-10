@@ -38,7 +38,7 @@ public class Character : MonoBehaviour
 
     public void TakeDamage(Attack attacker) 
     {
-        Debug.Log("TakeDamage: " + attacker.damage);
+        // Debug.Log("TakeDamage: " + attacker.damage);
         if (invulnerable) 
             return;
 
