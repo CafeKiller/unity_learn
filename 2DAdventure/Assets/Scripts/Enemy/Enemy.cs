@@ -7,9 +7,11 @@ public class Enemy : MonoBehaviour
 {
     protected Rigidbody2D rb;
 
-    protected Animator anima;
-
-    private PhysicsCheck physicsCheck;
+    [HideInInspector]
+    public Animator anima;
+    
+    [HideInInspector]
+    public PhysicsCheck physicsCheck;
     
     [Header("基本参数")] 
     // 正常速度
@@ -19,6 +21,7 @@ public class Enemy : MonoBehaviour
     public float chaseSpeed;
 
     // 当前速度
+    [HideInInspector]
     public float currentSpeed;
 
     // 方向
@@ -41,7 +44,18 @@ public class Enemy : MonoBehaviour
 
     public bool isDead;
 
-    private void Awake()
+    private BaseState currentState;
+    protected BaseState patrolState;
+    protected BaseState chaseState;
+
+
+    private void OnEnable()
+    {
+        currentState = patrolState;
+        currentState.OnEnter(this);
+    }
+
+    protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anima = GetComponent<Animator>();
@@ -56,21 +70,30 @@ public class Enemy : MonoBehaviour
         faceDir = new Vector3(-transform.localScale.x, 0, 0);
 
         // 判断是否碰撞墙壁且面向墙壁
-        if ((physicsCheck.touchLeftWall && faceDir.x < 0) 
+        /*if ((physicsCheck.touchLeftWall && faceDir.x < 0) 
             || (physicsCheck.touchRightWall && faceDir.x > 0))
         {
             // transform.localScale = new Vector3(faceDir.x, 1, 1);
             wait = true;
             anima.SetBool("walk", false);
-        }
+        }*/
+        
+        currentState.LogicUpdate();
         
         TimeCounter();
     }
 
     private void FixedUpdate()
     {
-        if(!isHurt & !isDead)
+        if(!isHurt && !isDead &&!wait)
             Move();
+        
+        currentState.PhysicsUpdate();
+    }
+
+    private void OnDisable()
+    {
+        currentState.OnExit();
     }
 
     protected virtual void Move()
